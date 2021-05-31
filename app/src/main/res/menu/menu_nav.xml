@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/mHome" android:iconTint="@color/white" android:icon="@drawable/ichome" android:title="Trang chủ"/>
+    <item android:title="Tìm kiếm" android:id="@+id/mSearch" android:icon="@drawable/ic_search"/>
+    <item android:id="@+id/mFavourite" android:icon="@drawable/ic_fav" android:title="Yêu thích"/>
+    <item android:id="@+id/mPerson" android:icon="@drawable/ic_person" android:title="Tài khoản"/>
+</menu>

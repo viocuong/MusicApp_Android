@@ -12,4 +12,8 @@
     <color name="title_black">#262c38</color>
     <color name="title_red">#FF5289</color>
     <color name="txt_hint">#99ffffff</color>
+    <color name="text_nomal">#9A9A9A</color>
+    <color name="text_big">#ffffff</color>
+    <color name="backround_gray">#9A9A9A</color>
+    <color name="button">#FF8B8B</color>
 </resources>
