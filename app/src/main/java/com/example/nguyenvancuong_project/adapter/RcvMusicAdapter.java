@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,11 +60,15 @@ public class RcvMusicAdapter extends RecyclerView.Adapter<RcvMusicAdapter.MusicH
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                PlayMusicFragment fragm = new PlayMusicFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("music",music);
+                fragm.setArguments(args);
                 FragmentManager fragmentManager = fragment.getParentFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.setCustomAnimations(R.anim.slide_in,R.anim.fade_out,R.anim.fade_in,R.anim.slide_out);
                 fragmentTransaction.setReorderingAllowed(true);
-                fragmentTransaction.replace(R.id.rootHome,new PlayMusicFragment(),"playmusic");
+                fragmentTransaction.replace(R.id.rootHome,fragm,"playmusic");
                 fragmentTransaction.addToBackStack("playmusic");
                 fragmentTransaction.commit();
             }

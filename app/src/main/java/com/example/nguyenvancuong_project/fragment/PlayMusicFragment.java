@@ -1,19 +1,30 @@
 package com.example.nguyenvancuong_project.fragment;
 
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.nguyenvancuong_project.R;
+import com.example.nguyenvancuong_project.Static;
+import com.example.nguyenvancuong_project.model.Music;
 import com.google.android.material.appbar.AppBarLayout;
+
+import java.io.IOException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,17 +32,17 @@ import com.google.android.material.appbar.AppBarLayout;
  * create an instance of this fragment.
  */
 public class PlayMusicFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private Toolbar toolbar;
-
+    private ImageView musicImg;
+    private TextView musicName, singerName;
+    private ImageButton btnFavourite, btnShuffle, btnPrev, btnPlayPause, btnNext, btnRepeat;
+    private SeekBar seekBar;
+    private MediaPlayer mediaPlayer;
+    private Handler handler;
     public PlayMusicFragment() {
         // Required empty public constructor
     }
@@ -56,7 +67,6 @@ public class PlayMusicFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -67,14 +77,79 @@ public class PlayMusicFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v =  inflater.inflate(R.layout.fragment_play_music, container, false);
+        initView(v);
+        Music music = (Music) getArguments().getSerializable("music");
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioAttributes(
+                new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .build()
+        );
+        try {
+            mediaPlayer.setDataSource("http://"+music.getUrl());
+            mediaPlayer.prepare();
+//            Log.d("do dai",""+mediaPlayer.getDuration());
 
-        toolbar = v.findViewById(R.id.topBar);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        handler = new Handler();
+        seekBar.setMax(100);
+
+        Static.loadImage(getActivity(),musicImg,"http://"+music.getImageUrl());
+        musicName.setText(music.getName());
+        singerName.setText(music.getSinger().getName());
+        btnPlayPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mediaPlayer.isPlaying()){
+                    handler.removeCallbacks(update);
+                    mediaPlayer.pause();
+                    btnPlayPause.setImageResource(R.drawable.ic_play);
+                }
+                else{
+                    mediaPlayer.start();
+                    btnPlayPause.setImageResource(R.drawable.ic_pause);
+                    updateSeekbar();
+                }
+            }
+        });
         toolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mediaPlayer.stop();
                 getParentFragmentManager().popBackStack();
+
             }
         });
         return v;
     }
+    private Runnable update = new Runnable() {
+        @Override
+        public void run() {
+            updateSeekbar();
+        }
+    };
+    private void updateSeekbar(){
+        if(mediaPlayer.isPlaying()){
+            double c = mediaPlayer.getCurrentPosition()/(1.0*mediaPlayer.getDuration());
+            int current = (int)(c*100);
+            seekBar.setProgress(current);
+            handler.postDelayed(update,1000);
+        }
+    }
+    private void initView(View v) {
+        toolbar = v.findViewById(R.id.topBar);
+        musicImg = v.findViewById(R.id.musicImg);
+        musicName = v.findViewById(R.id.musicName);
+        singerName = v.findViewById(R.id.singerName);
+        btnFavourite = v.findViewById(R.id.btnFavourite);
+        btnPrev = v.findViewById(R.id.btnPrevious);
+        btnPlayPause = v.findViewById(R.id.btnPlayPause);
+        btnNext = v.findViewById(R.id.btnNext);
+        btnRepeat = v.findViewById(R.id.btnRepeat);
+        seekBar = v.findViewById(R.id.seekBar);
+    }
+
 }
