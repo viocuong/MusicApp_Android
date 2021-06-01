@@ -12,14 +12,12 @@ public class Singer implements Serializable {
         this.img = img;
         this.dob = dob;
     }
-
     public Singer(String name) {
         this.name = name;
     }
 
     public Singer() {
     }
-
     public String getName() {
         return name;
     }

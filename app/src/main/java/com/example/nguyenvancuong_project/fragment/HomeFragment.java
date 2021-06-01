@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment {
                     }
 
                 }
-                singerAdapter = new SingerAdapter(getActivity(),singers);
+                singerAdapter = new SingerAdapter(getActivity(),singers,HomeFragment.this);
                 singerRcv.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL,false));
                 singerRcv.setAdapter(singerAdapter);
                 singerAdapter.notifyDataSetChanged();
@@ -157,7 +157,7 @@ public class HomeFragment extends Fragment {
         Log.d("oncreate","view"+musicList.size());
         //load singer
         singerRcv = v.findViewById(R.id.rcv_singer);
-        singerAdapter = new SingerAdapter(getActivity(),singers);
+        singerAdapter = new SingerAdapter(getActivity(),singers,HomeFragment.this);
         singerRcv.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL, false));
         singerRcv.setAdapter(singerAdapter);
         return v;

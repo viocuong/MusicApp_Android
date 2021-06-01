@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         initView();
     }
     private void initView() {
-
         nav = findViewById(R.id.nav);
         Intent intent = getIntent();
         this.person= (Person) intent.getSerializableExtra("person");
