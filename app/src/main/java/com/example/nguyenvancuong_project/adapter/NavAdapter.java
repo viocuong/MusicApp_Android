@@ -1,5 +1,7 @@
 package com.example.nguyenvancuong_project.adapter;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -26,7 +28,9 @@ public class NavAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position){
-            case 0: return new RootHomFragment();
+
+            case 0:
+                return new RootHomFragment();
             case 1: return new SearchFragment();
             case 2: return new FavouriteFragment();
             case 3: return new PersonFragment();
