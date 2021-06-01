@@ -25,6 +25,7 @@ import com.example.nguyenvancuong_project.model.Music;
 import com.google.android.material.appbar.AppBarLayout;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,10 +44,11 @@ public class PlayMusicFragment extends Fragment {
     private SeekBar seekBar;
     private MediaPlayer mediaPlayer;
     private Handler handler;
+    private int cur = 0;
+    private ArrayList<Music> listMusic;
     public PlayMusicFragment() {
         // Required empty public constructor
     }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -67,6 +69,8 @@ public class PlayMusicFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        cur = getArguments().getInt("music");
+        listMusic = (ArrayList<Music>) getArguments().getSerializable("listMusic");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -78,28 +82,38 @@ public class PlayMusicFragment extends Fragment {
         // Inflate the layout for this fragment
         View v =  inflater.inflate(R.layout.fragment_play_music, container, false);
         initView(v);
-        Music music = (Music) getArguments().getSerializable("music");
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioAttributes(
-                new AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .build()
-        );
-        try {
-            mediaPlayer.setDataSource("http://"+music.getUrl());
-            mediaPlayer.prepare();
-//            Log.d("do dai",""+mediaPlayer.getDuration());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        btnPlayPause.setImageResource(R.drawable.ic_pause);
         handler = new Handler();
         seekBar.setMax(100);
 
-        Static.loadImage(getActivity(),musicImg,"http://"+music.getImageUrl());
-        musicName.setText(music.getName());
-        singerName.setText(music.getSinger().getName());
+        playMusic(listMusic.get(cur));
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(cur<listMusic.size()-1){
+                    mediaPlayer.stop();
+                    mediaPlayer.reset();
+                    playMusic(listMusic.get(++cur));
+                }
+            }
+        });
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mediaPlayer.stop();
+                getParentFragmentManager().popBackStack();
+            }
+        });
+        btnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(cur>0){
+                    mediaPlayer.stop();
+                    mediaPlayer.reset();
+                    playMusic(listMusic.get(--cur));
+                }
+            }
+        });
         btnPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,15 +129,31 @@ public class PlayMusicFragment extends Fragment {
                 }
             }
         });
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mediaPlayer.stop();
-                getParentFragmentManager().popBackStack();
-
-            }
-        });
         return v;
+    }
+    private void playMusic(Music music){
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioAttributes(
+                new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .build()
+        );
+        try {
+            mediaPlayer.setDataSource("http://"+music.getUrl());
+            mediaPlayer.prepare();
+//            Log.d("do dai",""+mediaPlayer.getDuration());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mediaPlayer.start();
+
+        updateSeekbar();
+        Static.loadImage(getActivity(),musicImg,"http://"+music.getImageUrl());
+        musicName.setText(music.getName());
+        singerName.setText(music.getSinger().getName());
+
     }
     private Runnable update = new Runnable() {
         @Override
@@ -150,6 +180,20 @@ public class PlayMusicFragment extends Fragment {
         btnNext = v.findViewById(R.id.btnNext);
         btnRepeat = v.findViewById(R.id.btnRepeat);
         seekBar = v.findViewById(R.id.seekBar);
+
+        btnFavourite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(btnFavourite.getTransitionName().equals("disable")){
+                    btnFavourite.setTransitionName("enable");
+                    btnFavourite.setImageResource(R.drawable.ic_favaroutie_enable);
+                }
+                else if(btnFavourite.getTransitionName().equals("enable")){
+                    btnFavourite.setTransitionName("disable");
+                    btnFavourite.setImageResource(R.drawable.ic_border);
+                }
+            }
+        });
     }
 
 }

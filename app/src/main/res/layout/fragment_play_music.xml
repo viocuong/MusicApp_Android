@@ -44,7 +44,7 @@
         <LinearLayout
             android:paddingLeft="20dp"
             android:orientation="vertical"
-            android:layout_width="wrap_content"
+            android:layout_width="300dp"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/musicName"
@@ -73,6 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="#00ffffff"
+                android:transitionName="disable"
                 android:layout_marginRight="25dp"
                 android:src="@drawable/ic_border"
                 app:layout_constraintEnd_toEndOf="parent"

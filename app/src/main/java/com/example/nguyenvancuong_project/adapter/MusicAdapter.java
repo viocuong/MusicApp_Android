@@ -1,12 +1,10 @@
 package com.example.nguyenvancuong_project.adapter;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,30 +16,24 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.nguyenvancuong_project.LoginActivity;
-import com.example.nguyenvancuong_project.MainActivity;
 import com.example.nguyenvancuong_project.R;
 import com.example.nguyenvancuong_project.Static;
 import com.example.nguyenvancuong_project.fragment.PlayMusicFragment;
 import com.example.nguyenvancuong_project.model.Music;
-import com.example.nguyenvancuong_project.model.Person;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-public class RcvMusicAdapter extends RecyclerView.Adapter<RcvMusicAdapter.MusicHolder> {
+public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MusicHolder> {
     private Activity activity;
     private Fragment fragment;
-    private List<Music> mList;
-    public RcvMusicAdapter(Activity activity, List<Music> list, Fragment fragment){
+    private ArrayList<Music> mList;
+    public MusicAdapter(Activity activity, ArrayList<Music> list, Fragment fragment){
         this.fragment = fragment;
         this.activity = activity;
         this.mList = list;
@@ -52,7 +44,7 @@ public class RcvMusicAdapter extends RecyclerView.Adapter<RcvMusicAdapter.MusicH
         return new MusicHolder(activity.getLayoutInflater().inflate(R.layout.item_music_rcv,parent,false));
     }
     @Override
-    public void onBindViewHolder(@NonNull @NotNull MusicHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MusicHolder holder, int position) {
         Music music = mList.get(position);
         holder.music.setText(music.getName());
         holder.singer.setText(music.getSinger().getName());
@@ -62,18 +54,18 @@ public class RcvMusicAdapter extends RecyclerView.Adapter<RcvMusicAdapter.MusicH
             public void onClick(View v) {
                 PlayMusicFragment fragm = new PlayMusicFragment();
                 Bundle args = new Bundle();
-                args.putSerializable("music",music);
+                args.putInt("music", position);
+                args.putSerializable("listMusic",mList);
                 fragm.setArguments(args);
                 FragmentManager fragmentManager = fragment.getParentFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.setCustomAnimations(R.anim.slide_in,R.anim.fade_out,R.anim.fade_in,R.anim.slide_out);
                 fragmentTransaction.setReorderingAllowed(true);
-                fragmentTransaction.replace(R.id.rootHome,fragm,"playmusic");
+                fragmentTransaction.replace(R.id.main_frame,fragm);
                 fragmentTransaction.addToBackStack("playmusic");
                 fragmentTransaction.commit();
             }
         });
-
     }
     @Override
     public int getItemCount() {
@@ -89,30 +81,5 @@ public class RcvMusicAdapter extends RecyclerView.Adapter<RcvMusicAdapter.MusicH
             singer = v.findViewById(R.id.singer);
         }
     }
-    class loadImgTask extends AsyncTask<String, Integer, Void> {
-        ImageView img;
-        Music music;
-        public loadImgTask(ImageView img, Music music){
-            this.img = img;
-            this.music = music;
-        }
-        private Exception exception;
-        @Override
-        protected Void doInBackground(String... strings) {
-            URL url;
-            try {
-                url = new URL("http://"+music.getUrl());
-                Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                img.setImageBitmap(bmp);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-    }
+
 }

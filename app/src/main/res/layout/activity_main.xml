@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_dark"
     tools:context=".MainActivity">
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPager"
+    <FrameLayout
+        android:id="@+id/main_frame"
         android:layout_above="@+id/nav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"/>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav"
         android:background="#3a124a"

@@ -3,8 +3,6 @@ package com.example.nguyenvancuong_project.fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,7 +16,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.example.nguyenvancuong_project.R;
 import com.example.nguyenvancuong_project.Static;
-import com.example.nguyenvancuong_project.adapter.RcvMusicAdapter;
+import com.example.nguyenvancuong_project.adapter.MusicAdapter;
+import com.example.nguyenvancuong_project.adapter.SingerAdapter;
 import com.example.nguyenvancuong_project.model.Category;
 import com.example.nguyenvancuong_project.model.Music;
 import com.example.nguyenvancuong_project.model.Singer;
@@ -46,8 +45,12 @@ public class HomeFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private RecyclerView rcv;
-    private RcvMusicAdapter adapter;
-    private List<Music> musicList = new ArrayList<>();
+    private MusicAdapter adapter;
+    private ArrayList<Music> musicList = new ArrayList<>();
+
+    private RecyclerView singerRcv;
+    private SingerAdapter singerAdapter;
+    private ArrayList<Singer> singers = new ArrayList<>();
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -72,17 +75,15 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadSinger();
+        loadMusic();
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_home, container, false);
-        rcv = v.findViewById(R.id.rcv_music1);
+    private void loadMusic(){
         JsonArrayRequest rq = new JsonArrayRequest(Static.HOST + "/api/musics", new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -97,16 +98,9 @@ public class HomeFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                adapter = new RcvMusicAdapter(getActivity(),musicList,HomeFragment.this);
+                adapter = new MusicAdapter(getActivity(),musicList,HomeFragment.this);
                 rcv.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL,false));
                 rcv.setAdapter(adapter);
-                Log.d("do dai","m"+musicList.size());
-
-//                FragmentManager fragmentManager = getParentFragmentManager();
-//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                fragmentTransaction.replace(R.id.rootHome,new PlayMusicFragment(),"playmusic");
-//                fragmentTransaction.addToBackStack("playmusic");
-//                fragmentTransaction.commit();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -115,6 +109,57 @@ public class HomeFragment extends Fragment {
             }
         });
         VolleySingleton.getInstance(getContext()).addToRequestQueue(rq);
+    }
+    private void loadSinger(){
+        JsonArrayRequest rq = new JsonArrayRequest(Static.HOST+"/api/singers", new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+                for(int i=0; i<response.length(); i++){
+                    try {
+                        JSONObject s = response.getJSONObject(i);
+                        String name = s.getString("name");
+                        String url = s.getString("img_url");
+                        System.out.println(url);
+                        String dob = s.getString("dob");
+                        singers.add(new Singer(name,url,dob));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                singerAdapter = new SingerAdapter(getActivity(),singers);
+                singerRcv.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL,false));
+                singerRcv.setAdapter(singerAdapter);
+                singerAdapter.notifyDataSetChanged();
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        });
+        VolleySingleton.getInstance(getContext()).addToRequestQueue(rq);
+
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View v =  inflater.inflate(R.layout.fragment_home, container, false);
+        //load music
+        rcv = v.findViewById(R.id.rcv_music1);
+        adapter = new MusicAdapter(getActivity(),musicList,HomeFragment.this);
+        rcv.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL,false));
+        rcv.setAdapter(adapter);
+        Log.d("oncreate","view"+musicList.size());
+        //load singer
+        singerRcv = v.findViewById(R.id.rcv_singer);
+        singerAdapter = new SingerAdapter(getActivity(),singers);
+        singerRcv.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL, false));
+        singerRcv.setAdapter(singerAdapter);
         return v;
     }
 }

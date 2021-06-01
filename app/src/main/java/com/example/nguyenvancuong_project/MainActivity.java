@@ -2,32 +2,37 @@ package com.example.nguyenvancuong_project;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.android.volley.RequestQueue;
-import com.example.nguyenvancuong_project.adapter.NavAdapter;
+import com.example.nguyenvancuong_project.fragment.FavouriteFragment;
+import com.example.nguyenvancuong_project.fragment.HomeFragment;
 import com.example.nguyenvancuong_project.fragment.PersonFragment;
+import com.example.nguyenvancuong_project.fragment.SearchFragment;
 import com.example.nguyenvancuong_project.model.Person;
 import com.example.nguyenvancuong_project.singleton.VolleySingleton;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.jetbrains.annotations.NotNull;
-
 public class MainActivity extends AppCompatActivity {
     private Person person;
     private BottomNavigationView nav;
-    private ViewPager viewPager;
     private FirebaseUser user;
     private FirebaseAuth mAuth;
-    private NavAdapter navAdater; //adapter fragment
     private RequestQueue queue;
+    private final HomeFragment homeFragment = new HomeFragment();
+    private final SearchFragment searchFragment = new SearchFragment();
+    private final FavouriteFragment favouriteFragment= new FavouriteFragment();
+    private final PersonFragment personFragment = new PersonFragment();
+    private FragmentManager fm = getSupportFragmentManager();
+    private Fragment active = homeFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,16 +42,14 @@ public class MainActivity extends AppCompatActivity {
         initView();
     }
     private void initView() {
-        viewPager = findViewById(R.id.viewPager);
+
         nav = findViewById(R.id.nav);
         Intent intent = getIntent();
         this.person= (Person) intent.getSerializableExtra("person");
         this.mAuth = intent.getParcelableExtra("mAuth");
-        navAdater = new NavAdapter(getSupportFragmentManager(),4);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-
-        viewPager.setAdapter(navAdater);
+        initFragmentsNav();
         Bundle bundle = new Bundle();
         bundle.putSerializable("person", person);
         PersonFragment frag = new PersonFragment();
@@ -56,23 +59,37 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.mHome:
-                        viewPager.setCurrentItem(0);
+                        fm.beginTransaction().hide(active).show(homeFragment).commit();
+                        active = homeFragment;
+//                        viewPager.setCurrentItem(0);
                         break;
                     case R.id.mSearch:
-                        viewPager.setCurrentItem(1);
-                        break;
+                        fm.beginTransaction().hide(active).show(searchFragment).commit();
+                        active = searchFragment;
+//                        viewPager.setCurrentItem(1);
+//                        break;
                     case R.id.mFavourite:
-                        viewPager.setCurrentItem(2);
+                        fm.beginTransaction().hide(active).show(favouriteFragment).commit();
+                        active = favouriteFragment;
+//                        viewPager.setCurrentItem(2);
                         break;
                     case R.id.mPerson:
-
-                        viewPager.setCurrentItem(3);
+                        fm.beginTransaction().hide(active).show(personFragment).commit();
+                        active= personFragment;
+//                        viewPager.setCurrentItem(3);
                         break;
                 }
                 return true;
             }
         });
 
+
+    }
+    private void initFragmentsNav(){
+        fm.beginTransaction().add(R.id.main_frame,homeFragment,"1").commit();
+        fm.beginTransaction().add(R.id.main_frame,searchFragment,"2").hide(searchFragment).commit();
+        fm.beginTransaction().add(R.id.main_frame,favouriteFragment,"3").hide(favouriteFragment).commit();
+        fm.beginTransaction().add(R.id.main_frame,personFragment,"4").hide(personFragment).commit();
 
     }
     public Person getPerson(){
