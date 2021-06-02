@@ -50,7 +50,6 @@ public class SingerFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -61,7 +60,6 @@ public class SingerFragment extends Fragment {
     private RecyclerView rcv;
     private ArrayList<Music> musicList = new ArrayList<>();
     private MusicSingerAdapter adapter;
-
 
     public SingerFragment() {
     }
@@ -95,7 +93,7 @@ public class SingerFragment extends Fragment {
         Log.d("so luong",""+musicList.size());
         rcv = v.findViewById(R.id.rcv);
         rcv.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.VERTICAL,false));
-        adapter = new MusicSingerAdapter(getActivity(),musicList);
+        adapter = new MusicSingerAdapter(getActivity(),musicList,SingerFragment.this);
         rcv.setAdapter(adapter);
         setListener();
         Static.loadImage(getContext(),img,"http://"+singer.getImg());
@@ -112,8 +110,6 @@ public class SingerFragment extends Fragment {
         });
     }
     private void loadMusic(String name){
-        HashMap<String, String> p = new HashMap<>();
-        p.put("name",name);
         StringRequest rq = new StringRequest(Request.Method.POST,Static.HOST+"/api/musicbysinger", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -148,7 +144,7 @@ public class SingerFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                adapter = new MusicSingerAdapter(getActivity(),musicList);
+                adapter = new MusicSingerAdapter(getActivity(),musicList, SingerFragment.this);
                 rcv.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.VERTICAL,false));
                 rcv.setAdapter(adapter);
 
@@ -156,7 +152,6 @@ public class SingerFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
             }
         }){
             @Nullable

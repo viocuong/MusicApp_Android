@@ -21,7 +21,6 @@ public class Static {
                 }
             }
             public void onErrorResponse(VolleyError error) {
-
             }
         });
     }public static void loadImageCircle(Context context, CircleImageView img, String url){

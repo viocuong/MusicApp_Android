@@ -9,6 +9,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.example.nguyenvancuong_project.fragment.FavouriteFragment;
@@ -62,34 +63,28 @@ public class MainActivity extends AppCompatActivity {
                         active = homeFragment;
 //                        viewPager.setCurrentItem(0);
                         break;
-                    case R.id.mSearch:
+                    case R.id.search:
                         fm.beginTransaction().hide(active).show(searchFragment).commit();
                         active = searchFragment;
-//                        viewPager.setCurrentItem(1);
-//                        break;
+                        break;
                     case R.id.mFavourite:
                         fm.beginTransaction().hide(active).show(favouriteFragment).commit();
                         active = favouriteFragment;
-//                        viewPager.setCurrentItem(2);
                         break;
                     case R.id.mPerson:
                         fm.beginTransaction().hide(active).show(personFragment).commit();
                         active= personFragment;
-//                        viewPager.setCurrentItem(3);
                         break;
                 }
                 return true;
             }
         });
-
-
     }
     private void initFragmentsNav(){
         fm.beginTransaction().add(R.id.main_frame,homeFragment,"1").commit();
         fm.beginTransaction().add(R.id.main_frame,searchFragment,"2").hide(searchFragment).commit();
         fm.beginTransaction().add(R.id.main_frame,favouriteFragment,"3").hide(favouriteFragment).commit();
         fm.beginTransaction().add(R.id.main_frame,personFragment,"4").hide(personFragment).commit();
-
     }
     public Person getPerson(){
         return this.person;
