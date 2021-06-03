@@ -4,6 +4,7 @@ import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
@@ -19,13 +20,21 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.nguyenvancuong_project.R;
 import com.example.nguyenvancuong_project.Static;
 import com.example.nguyenvancuong_project.model.Music;
+import com.example.nguyenvancuong_project.singleton.VolleySingleton;
 import com.google.android.material.appbar.AppBarLayout;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,10 +80,38 @@ public class PlayMusicFragment extends Fragment {
         super.onCreate(savedInstanceState);
         cur = getArguments().getInt("music");
         listMusic = (ArrayList<Music>) getArguments().getSerializable("listMusic");
+        view(listMusic.get(cur).getName());
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+    }
+    private void view(String name){
+        StringRequest rq = new StringRequest(Request.Method.POST, Static.HOST+"/api/view", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("phan hoi", response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> m = new HashMap<>();
+                m.put("name",name);
+                return m;
+            }
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/x-www-form-urlencoded");
+                return params;
+            }
+        };
+
+        VolleySingleton.getInstance(getActivity()).addToRequestQueue(rq);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

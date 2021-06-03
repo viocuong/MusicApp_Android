@@ -8,12 +8,24 @@ public class Music implements Serializable {
     private String name;
     private String url;
     private String image_url;
+    private int view;
     public Music(Singer singer, Category cagetory, String name, String url, String img_url) {
         this.image_url = img_url;
         this.singer = singer;
         this.cagetory = cagetory;
         this.name = name;
         this.url = url;
+    }
+    public Music(Singer singer, Category cagetory, String name, String url, String img_url, int view) {
+        this.view = view;
+        this.image_url = img_url;
+        this.singer = singer;
+        this.cagetory = cagetory;
+        this.name = name;
+        this.url = url;
+    }
+    public int getView(){
+        return this.view;
     }
     public Music(String name, String url) {
         this.name = name;

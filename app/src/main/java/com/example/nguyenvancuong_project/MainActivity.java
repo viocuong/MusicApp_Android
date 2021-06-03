@@ -4,15 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
-import com.example.nguyenvancuong_project.fragment.FavouriteFragment;
+import com.example.nguyenvancuong_project.fragment.RankFragment;
 import com.example.nguyenvancuong_project.fragment.HomeFragment;
 import com.example.nguyenvancuong_project.fragment.PersonFragment;
 import com.example.nguyenvancuong_project.fragment.SearchFragment;
@@ -30,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private RequestQueue queue;
     private final HomeFragment homeFragment = new HomeFragment();
     private final SearchFragment searchFragment = new SearchFragment();
-    private final FavouriteFragment favouriteFragment= new FavouriteFragment();
+    private final RankFragment rankFragment = new RankFragment();
     private final PersonFragment personFragment = new PersonFragment();
     private FragmentManager fm = getSupportFragmentManager();
     private Fragment active = homeFragment;
@@ -67,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
                         fm.beginTransaction().hide(active).show(searchFragment).commit();
                         active = searchFragment;
                         break;
-                    case R.id.mFavourite:
-                        fm.beginTransaction().hide(active).show(favouriteFragment).commit();
-                        active = favouriteFragment;
+                    case R.id.mRank:
+                        fm.beginTransaction().hide(active).show(rankFragment).commit();
+                        active = rankFragment;
                         break;
                     case R.id.mPerson:
                         fm.beginTransaction().hide(active).show(personFragment).commit();
@@ -83,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private void initFragmentsNav(){
         fm.beginTransaction().add(R.id.main_frame,homeFragment,"1").commit();
         fm.beginTransaction().add(R.id.main_frame,searchFragment,"2").hide(searchFragment).commit();
-        fm.beginTransaction().add(R.id.main_frame,favouriteFragment,"3").hide(favouriteFragment).commit();
+        fm.beginTransaction().add(R.id.main_frame, rankFragment,"3").hide(rankFragment).commit();
         fm.beginTransaction().add(R.id.main_frame,personFragment,"4").hide(personFragment).commit();
     }
     public Person getPerson(){
