@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -30,6 +31,9 @@ import com.example.nguyenvancuong_project.Static;
 import com.example.nguyenvancuong_project.model.Music;
 import com.example.nguyenvancuong_project.singleton.VolleySingleton;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,6 +58,8 @@ public class PlayMusicFragment extends Fragment {
     private MediaPlayer mediaPlayer;
     private Handler handler;
     private int cur = 0;
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
     private ArrayList<Music> listMusic;
     public PlayMusicFragment() {
         // Required empty public constructor
@@ -78,6 +84,8 @@ public class PlayMusicFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
         cur = getArguments().getInt("music");
         listMusic = (ArrayList<Music>) getArguments().getSerializable("listMusic");
         view(listMusic.get(cur).getName());
@@ -90,7 +98,7 @@ public class PlayMusicFragment extends Fragment {
         StringRequest rq = new StringRequest(Request.Method.POST, Static.HOST+"/api/view", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("phan hoi", response);
+                Log.d("phan hoi like", response);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -190,7 +198,6 @@ public class PlayMusicFragment extends Fragment {
         Static.loadImage(getActivity(),musicImg,"http://"+music.getImageUrl());
         musicName.setText(music.getName());
         singerName.setText(music.getSinger().getName());
-
     }
     private Runnable update = new Runnable() {
         @Override
@@ -217,11 +224,14 @@ public class PlayMusicFragment extends Fragment {
         btnNext = v.findViewById(R.id.btnNext);
         btnRepeat = v.findViewById(R.id.btnRepeat);
         seekBar = v.findViewById(R.id.seekBar);
-
         btnFavourite.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v1) {
                 if(btnFavourite.getTransitionName().equals("disable")){
+                    View view = v.findViewById(R.id.parent);
+                    String s= "Đã thích"  +listMusic.get(cur).getName();
+                    favourite(user.getUid(),listMusic.get(cur).getName());
+                    Snackbar.make(view, s, Snackbar.LENGTH_LONG).show();
                     btnFavourite.setTransitionName("enable");
                     btnFavourite.setImageResource(R.drawable.ic_favaroutie_enable);
                 }
@@ -231,6 +241,32 @@ public class PlayMusicFragment extends Fragment {
                 }
             }
         });
+    }
+    private void favourite(String uid, String musicName){
+        StringRequest rq = new StringRequest(Request.Method.POST, "http://192.168.1.10:8001/api/favourite", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("phan hoi thich", response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> m = new HashMap<>();
+                m.put("person_uid",uid);
+                m.put("music_name",musicName);
+                return m;
+            }
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/x-www-form-urlencoded");
+                return params;
+            }
+        };
+        VolleySingleton.getInstance(getActivity()).addToRequestQueue(rq);
     }
 
 }
