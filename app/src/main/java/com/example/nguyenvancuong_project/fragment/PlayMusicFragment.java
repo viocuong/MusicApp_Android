@@ -243,7 +243,7 @@ public class PlayMusicFragment extends Fragment {
         });
     }
     private void favourite(String uid, String musicName){
-        StringRequest rq = new StringRequest(Request.Method.POST, "http://192.168.1.10:8001/api/favourite", new Response.Listener<String>() {
+        StringRequest rq = new StringRequest(Request.Method.POST, Static.HOST+"/api/favourite", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.d("phan hoi thich", response);
@@ -268,5 +268,4 @@ public class PlayMusicFragment extends Fragment {
         };
         VolleySingleton.getInstance(getActivity()).addToRequestQueue(rq);
     }
-
 }
